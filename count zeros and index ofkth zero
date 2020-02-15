@@ -1,0 +1,80 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fast ios_base::sync_with_stdio(0),cin.tie(0)
+#define ll long long
+#define LL unsigned ll
+#define pb push_back
+#define pi pair<int,int>
+long double PI =3.14159265358979323846;
+ 
+const ll M=1e9+7;
+const ll inf=1e18;
+const ll ms=2e5+1;
+
+vector<int> vc;
+    int size;
+    void mybuild(int i,int j,int p,vector<int> &nums)
+    {
+        if(i>j)
+            return;
+        if(i==j)
+        {    vc[p]=(nums[i]==0?1:0);return;}
+        int mid=i+(j-i)/2;
+        mybuild(i,mid,2*p+1,nums);
+        mybuild(mid+1,j,2*p+2,nums);
+        vc[p]=vc[2*p+1]+vc[2*p+2];
+    }
+    void myupdate(int i,int j,int ind,int p,int val)
+    {
+        if(i>j)
+            return;
+        if(i==j)
+        {   vc[p]=val;return;}
+            int mid=i+(j-i)/2;
+            if(ind<=mid)
+                myupdate(i,mid,ind,2*p+1,val);
+            else
+                myupdate(mid+1,j,ind,2*p+2,val);
+            vc[p]=vc[2*p+1]+vc[2*p+2];
+    }
+    int rangequery(int ss,int se,int p,int qs,int qe)
+    {
+        if (qs <= ss && qe >= se)
+        return vc[p];
+    if (se < qs || ss > qe)
+        return 0;
+        int mid=ss+(se-ss)/2;
+        return rangequery(ss,mid,2*p+1,qs,qe)+rangequery(mid+1,se,2*p+2,qs,qe);
+    }
+    int kth(int l,int r,int p,int k)
+    {
+        if(l>r)
+            return -1;
+        if(l==r)
+            return l;
+        int mid=l+(r-l)/2;
+        if(vc[p]<k)
+            return -1;
+        if(vc[2*p+1]>=k)
+            return kth(l,mid,2*p+1,k);
+        else
+            return kth(mid+1,r,2*p+2,k-vc[2*p+1]);
+        
+    }
+int main()
+{
+    fast;
+    vector<int>nums={0,-3,-3,0,1,0};
+    size=nums.size();
+    vc.resize(size*4);
+    mybuild(0,size-1,0,nums);
+    cout<<rangequery(0,size-1,0,0,2)<<endl;
+    cout<<rangequery(0,size-1,0,2,3)<<endl;
+    cout<<rangequery(0,size-1,0,4,5)<<endl;
+    cout<<rangequery(0,size-1,0,0,5)<<endl;
+    cout<<kth(0,size-1,0,1)<<endl;
+    cout<<kth(0,size-1,0,2)<<endl;
+    cout<<kth(0,size-1,0,3)<<endl;
+    cout<<kth(0,size-1,0,4)<<endl;
+    return 0;
+}
