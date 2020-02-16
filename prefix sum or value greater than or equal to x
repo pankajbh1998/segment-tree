@@ -1,0 +1,98 @@
+//prefix sum greater than given value
+//first vlue greater or equal to given value
+#include <bits/stdc++.h>
+using namespace std;
+#define fast ios_base::sync_with_stdio(0),cin.tie(0)
+#define ll long long
+#define LL unsigned ll
+#define pb push_back
+#define pi pair<int,int>
+long double PI =3.14159265358979323846;
+ 
+const ll M=1e9+7;
+const ll inf=1e18;
+const ll ms=2e5+1;
+
+vector<int> vc;
+    int size;
+    void mybuild(int i,int j,int p,vector<int> &nums)
+    {
+        if(i>j)
+            return;
+        if(i==j)
+        {    vc[p]=(nums[i]);return;}
+        int mid=i+(j-i)/2;
+        mybuild(i,mid,2*p+1,nums);
+        mybuild(mid+1,j,2*p+2,nums);
+        vc[p]=max(vc[2*p+1],vc[2*p+2]);
+    }
+    void myupdate(int i,int j,int ind,int p,int val)
+    {
+        if(i>j)
+            return;
+        if(i==j)
+        {   vc[p]=val;return;}
+            int mid=i+(j-i)/2;
+            if(ind<=mid)
+                myupdate(i,mid,ind,2*p+1,val);
+            else
+                myupdate(mid+1,j,ind,2*p+2,val);
+            vc[p]=vc[2*p+1]+vc[2*p+2];
+    }
+    int rangequery(int ss,int se,int p,int qs,int qe)
+    {
+        if (qs <= ss && qe >= se)
+        return vc[p];
+    if (se < qs || ss > qe)
+        return 0;
+        int mid=ss+(se-ss)/2;
+        return max(rangequery(ss,mid,2*p+1,qs,qe),rangequery(mid+1,se,2*p+2,qs,qe));
+    }
+    int kth(int l,int r,int p,int k)
+    {
+        if(l>r)
+            return -1;
+        if(l==r)
+            return l;
+        int mid=l+(r-l)/2;
+        if(vc[p]<k)
+            return -1;
+        if(vc[2*p+1]>=k)
+            return kth(l,mid,2*p+1,k);
+        else
+            return kth(mid+1,r,2*p+2,k-vc[2*p+1]);
+        
+    }
+    int fun(int l,int r,int p,int x)
+    {
+        if(l>r)
+            return 0;
+        if(l==r)    
+            return l;
+        int mid=l+(r-l)/2;
+        if(vc[p]<x)
+            return -1;
+        if(vc[2*p+1]>=x)
+            return fun(l,mid,2*p+1,x);
+        return fun(mid+1,r,2*p+2,x);
+    }
+int main()
+{
+    fast;
+    vector<int>nums={1,3,4,5,6};
+    size=nums.size();
+    vc.resize(size*4);
+    mybuild(0,size-1,0,nums);
+   /* cout<<rangequery(0,size-1,0,0,2)<<endl;
+    cout<<rangequery(0,size-1,0,2,3)<<endl;
+    cout<<rangequery(0,size-1,0,4,5)<<endl;
+    cout<<rangequery(0,size-1,0,0,5)<<endl;
+    cout<<kth(0,size-1,0,1)<<endl;
+    cout<<kth(0,size-1,0,2)<<endl;
+    cout<<kth(0,size-1,0,3)<<endl;
+    cout<<kth(0,size-1,0,4)<<endl;*/
+    int x=2;
+   // cout<<vc[0]<<endl;
+    cout<<fun(0,size-1,0,x);
+    return 0;
+}
